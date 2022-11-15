@@ -12,7 +12,11 @@ import java.sql.DriverManager;
  */
 public class Conexion {
     
-    public Connection obtener() {
+    /**
+     * Obtiene una conexión hacia la base de datos utilizando los parámetros proporcionados.
+     * @return La conexión inicializada hacia la base de datos.
+     */
+    public static Connection obtener() {
         Connection conexion = null;
         try {
             conexion = DriverManager.getConnection("jdbc:mysql://localhost/totorodb?user=root&password=admin");

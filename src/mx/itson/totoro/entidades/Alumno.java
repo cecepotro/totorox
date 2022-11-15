@@ -4,8 +4,14 @@
  */
 package mx.itson.totoro.entidades;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import java.sql.Connection;
+import mx.itson.totoro.persistencia.Conexion;
+import java.sql.Statement;
+import java.sql.ResultSet;
 /**
  *
  * @author jesus
@@ -18,6 +24,32 @@ public class Alumno {
     private String idCia;
     private Date fechaNacimiento;
     private String apodo;
+    
+    public List<Alumno> obtenerTodos() {
+        List<Alumno> alumnos = new ArrayList<>();
+        try{
+           
+           Connection conexion = Conexion.obtener();
+           Statement statement = conexion.createStatement();
+           ResultSet resultSet = statement.executeQuery("SELECT id, nombre, apellidos, idCia, fechaNacimiento, apodo FROM alumno");
+           
+           while(resultSet.next()){
+               Alumno alumno = new Alumno();
+               alumno.setId(resultSet.getInt(1));
+               alumno.setNombre(resultSet.getString(2));
+               alumno.setApellidos(resultSet.getString(3));
+               alumno.setIdCia(resultSet.getString(4));
+               alumno.setFechaNacimiento(resultSet.getDate(5));
+               alumno.setApodo(resultSet.getString(6));
+               
+               alumnos.add(alumno);
+               
+           }
+        } catch (Exception ex){
+            System.err.println("Ocurrió un error: " + ex.getMessage());
+        }
+        return alumnos;
+    }
     
     /**
      * @return the id
