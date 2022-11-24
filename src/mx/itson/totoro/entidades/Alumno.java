@@ -12,6 +12,7 @@ import java.sql.Connection;
 import mx.itson.totoro.persistencia.Conexion;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 /**
  *
  * @author jesus
@@ -25,7 +26,7 @@ public class Alumno {
     private Date fechaNacimiento;
     private String apodo;
     
-    public List<Alumno> obtenerTodos() {
+    public static List<Alumno> obtenerTodos() {
         List<Alumno> alumnos = new ArrayList<>();
         try{
            
@@ -50,6 +51,35 @@ public class Alumno {
         }
         return alumnos;
     }
+    
+    /**
+     * 
+     * @param nombre
+     * @param apellidos
+     * @param idCia
+     * @param fechaNacimiento
+     * @param apodo
+     * @return Indica si se guardó o no el registro.
+     */
+    public static boolean guardar(String nombre, String apellidos, String idCia, Date fechaNacimiento, String apodo){
+        boolean resultado = false;
+        try {
+            Connection conexion = Conexion.obtener();
+            String consulta = "INSERT INTO alumno (nombre, apellidos, idCia, apodo) VALUES (?, ?, ?, ?)";
+            PreparedStatement statement = conexion.prepareStatement(consulta);
+            statement.setString(1, nombre);
+            statement.setString(2, apellidos);
+            statement.setString(3, idCia);
+            statement.setString(4, apodo);
+            statement.execute();
+            resultado = statement.getUpdateCount() == 1;
+            conexion.close();
+        } catch(Exception ex){
+            System.err.println("Ocurrió un error: " + ex.getMessage());
+        }
+        return resultado;
+    }
+    
     
     /**
      * @return the id
