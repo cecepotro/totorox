@@ -14,12 +14,22 @@ import mx.itson.totoro.entidades.Alumno;
  */
 public class AlumnoForm extends javax.swing.JDialog {
 
+    int id;
     /**
      * Creates new form AlumnoForm
      */
-    public AlumnoForm(java.awt.Frame parent, boolean modal) {
+    public AlumnoForm(java.awt.Frame parent, boolean modal, int id) {
         super(parent, modal);
         initComponents();
+        
+        this.id = id;
+        if(id != 0){
+            Alumno alumno = Alumno.obtenerPorId(id);
+            txtNombre.setText(alumno.getNombre());
+            txtApellidos.setText(alumno.getApellidos());
+            txtIdCia.setText(alumno.getIdCia());
+            txtApodo.setText(alumno.getApodo());
+        }
     }
 
     /**
@@ -118,7 +128,15 @@ public class AlumnoForm extends javax.swing.JDialog {
         String idCia = txtIdCia.getText();
         String apodo = txtApodo.getText();
         
-        boolean resultado = Alumno.guardar(nombre, apellidos, idCia, new Date(), apodo);
+        /*if(this.id == 0){
+            boolean resultado =  Alumno.guardar(nombre, apellidos, idCia, new Date(), apodo);
+        } else {
+            boolean resultado =  Alumno.editar(this.id, nombre, apellidos, idCia, new Date(), apodo);
+        }*/
+        
+        boolean resultado = this.id == 0 ? 
+                Alumno.guardar(nombre, apellidos, idCia, new Date(), apodo) :
+                Alumno.editar(this.id, nombre, apellidos, idCia, new Date(), apodo);
         
         if(resultado){
             JOptionPane.showMessageDialog(this, "El registro se guardó correctamente", "Registro guardado", JOptionPane.INFORMATION_MESSAGE);
@@ -160,7 +178,7 @@ public class AlumnoForm extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                AlumnoForm dialog = new AlumnoForm(new javax.swing.JFrame(), true);
+                AlumnoForm dialog = new AlumnoForm(new javax.swing.JFrame(), true, 0);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

@@ -13,47 +13,71 @@ import mx.itson.totoro.persistencia.Conexion;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
+
 /**
  *
  * @author jesus
  */
 public class Alumno {
-    
+
     private int id;
     private String nombre;
     private String apellidos;
     private String idCia;
     private Date fechaNacimiento;
     private String apodo;
-    
+
     public static List<Alumno> obtenerTodos() {
         List<Alumno> alumnos = new ArrayList<>();
-        try{
-           
-           Connection conexion = Conexion.obtener();
-           Statement statement = conexion.createStatement();
-           ResultSet resultSet = statement.executeQuery("SELECT id, nombre, apellidos, idCia, fechaNacimiento, apodo FROM alumno");
-           
-           while(resultSet.next()){
-               Alumno alumno = new Alumno();
-               alumno.setId(resultSet.getInt(1));
-               alumno.setNombre(resultSet.getString(2));
-               alumno.setApellidos(resultSet.getString(3));
-               alumno.setIdCia(resultSet.getString(4));
-               alumno.setFechaNacimiento(resultSet.getDate(5));
-               alumno.setApodo(resultSet.getString(6));
-               
-               alumnos.add(alumno);
-               
-           }
-        } catch (Exception ex){
+        try {
+
+            Connection conexion = Conexion.obtener();
+            Statement statement = conexion.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT id, nombre, apellidos, idCia, fechaNacimiento, apodo FROM alumno");
+
+            while (resultSet.next()) {
+                Alumno alumno = new Alumno();
+                alumno.setId(resultSet.getInt(1));
+                alumno.setNombre(resultSet.getString(2));
+                alumno.setApellidos(resultSet.getString(3));
+                alumno.setIdCia(resultSet.getString(4));
+                alumno.setFechaNacimiento(resultSet.getDate(5));
+                alumno.setApodo(resultSet.getString(6));
+
+                alumnos.add(alumno);
+
+            }
+        } catch (Exception ex) {
             System.err.println("Ocurrió un error: " + ex.getMessage());
         }
         return alumnos;
     }
-    
+
+    public static Alumno obtenerPorId(int id) {
+        Alumno alumno = new Alumno();
+        try {
+            Connection conexion = Conexion.obtener();
+            PreparedStatement statement = conexion.prepareStatement("SELECT id, nombre, apellidos, idCia, fechaNacimiento, apodo FROM alumno WHERe id = ?");
+            statement.setInt(1, id);
+
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                alumno.setId(resultSet.getInt(1));
+                alumno.setNombre(resultSet.getString(2));
+                alumno.setApellidos(resultSet.getString(3));
+                alumno.setIdCia(resultSet.getString(4));
+                alumno.setFechaNacimiento(resultSet.getDate(5));
+                alumno.setApodo(resultSet.getString(6));
+            }
+
+        } catch (Exception ex) {
+            System.err.println("Ocurrió un error: " + ex.getMessage());
+        }
+        return alumno;
+    }
+
     /**
-     * 
+     *
      * @param nombre
      * @param apellidos
      * @param idCia
@@ -61,7 +85,7 @@ public class Alumno {
      * @param apodo
      * @return Indica si se guardó o no el registro.
      */
-    public static boolean guardar(String nombre, String apellidos, String idCia, Date fechaNacimiento, String apodo){
+    public static boolean guardar(String nombre, String apellidos, String idCia, Date fechaNacimiento, String apodo) {
         boolean resultado = false;
         try {
             Connection conexion = Conexion.obtener();
@@ -74,13 +98,34 @@ public class Alumno {
             statement.execute();
             resultado = statement.getUpdateCount() == 1;
             conexion.close();
-        } catch(Exception ex){
+        } catch (Exception ex) {
             System.err.println("Ocurrió un error: " + ex.getMessage());
         }
         return resultado;
     }
-    
-    
+
+    public static boolean editar(int id, String nombre, String apellidos, String idCia, Date fechaNacimiento, String apodo) {
+        boolean resultado = false;
+        try {
+            Connection conexion = Conexion.obtener();
+            String consulta = "UPDATE alumno SET nombre = ?, apellidos = ?, idCia = ?, apodo = ? WHERE id = ?";
+            PreparedStatement statement = conexion.prepareStatement(consulta);
+            statement.setString(1, nombre);
+            statement.setString(2, apellidos);
+            statement.setString(3, idCia);
+            statement.setString(4, apodo);
+            statement.setInt(5, id);
+            
+            statement.execute();
+            
+            resultado = statement.getUpdateCount() == 1;
+            conexion.close();
+        } catch (Exception ex) {
+            System.err.println("Ocurrió un error: " + ex.getMessage());
+        }
+        return resultado;
+    }
+
     /**
      * @return the id
      */
@@ -164,7 +209,5 @@ public class Alumno {
     public void setApodo(String apodo) {
         this.apodo = apodo;
     }
-   
 
-    
 }
